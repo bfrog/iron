@@ -6,9 +6,9 @@ use std::time::Duration;
 #[cfg(feature = "ssl")]
 use std::path::PathBuf;
 
-pub use hyper::server::Listening;
-use hyper::server::Server;
-use hyper::net::Fresh;
+pub use hyper::server::{ServerLoop, Listening};
+use hyper::server::{Server, Handler as HyperHandler, HandlerFactory, Request as HyperRequest, Response as HyperResponse};
+use hyper::net::Transport;
 
 use request::HttpRequest;
 use response::HttpResponse;
@@ -182,7 +182,18 @@ impl<H: Handler> Iron<H> {
     }
 }
 
-impl<H: Handler> ::hyper::server::Handler for Iron<H> {
+enum IronHandlerState {
+    ReadRequest(HyperRequest),
+    ReadRequestBody(Vec<u8>, usize),
+    WriteResponse(HyperResponse),
+    WriteResponseBody(Vec<u8>, usize),
+}
+
+struct IronHandler<T: Transport> {
+    state: IronHandlerState,
+}
+
+impl<H: Handler> ::hyper::server::HandlerFactory for Iron<H> {
     fn handle(&self, http_req: HttpRequest, mut http_res: HttpResponse<Fresh>) {
         // Set some defaults in case request handler panics.
         // This should not be necessary anymore once stdlib's catch_panic becomes stable.
