@@ -12,8 +12,7 @@ use hyper::header::Headers;
 use status::{self, Status};
 use {Plugin, headers};
 
-pub use hyper::server::response::Response as HttpResponse;
-use hyper::net::Fresh;
+pub use hyper::server::Response as HttpResponse;
 
 /// A `Write`r of HTTP response bodies.
 pub struct ResponseBody<'a>(Box<Write + 'a>);

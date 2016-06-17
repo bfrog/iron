@@ -5,15 +5,10 @@ use std::net::SocketAddr;
 use std::fmt::{self, Debug};
 
 use hyper::uri::RequestUri::{AbsoluteUri, AbsolutePath};
-use hyper::net::NetworkStream;
-use hyper::http::h1::HttpReader;
 
 use typemap::TypeMap;
 use plugin::Extensible;
 use method::Method;
-
-pub use hyper::server::request::Request as HttpRequest;
-use hyper::buffer;
 
 pub use self::url::Url;
 

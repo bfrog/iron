@@ -12,9 +12,7 @@
 //! approach to ownership in both single threaded and multi threaded contexts.
 //!
 //! Iron is highly concurrent and can scale horizontally on more machines behind a
-//! load balancer or by running more threads on a more powerful machine. Iron
-//! avoids the bottlenecks encountered in highly concurrent code by avoiding shared
-//! writes and locking in the core framework.
+//! load balancer or by running more threads on a more powerful machine.
 //!
 //! ## Hello World
 //!
@@ -25,9 +23,10 @@
 //! use iron::status;
 //!
 //! fn main() {
-//!     Iron::new(|_: &mut Request| {
+//!     let (server, _listener) = Iron::new(|_: &mut Request| {
 //!         Ok(Response::with((status::Ok, "Hello World!")))
 //!     }).http("localhost:3000").unwrap();
+//!     server.run()
 //! }
 //! ```
 //!
