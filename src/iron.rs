@@ -93,35 +93,35 @@ impl Protocol {
 }
 
 impl<H: Handler> Iron<H> {
-    /// Kick off the server process using the HTTP protocol.
+    /// Create a server using the HTTP protocol.
     ///
     /// Call this once to begin listening for requests on the server.
-    /// This consumes the Iron instance, but does the listening on
-    /// another task, so is not blocking.
+    /// This consumes the Iron instance returns a `Server`, `Listener` pair.
     ///
-    /// The thread returns a guard that will automatically join with the parent
-    /// once it is dropped, blocking until this happens.
+    /// `Server` may then be run() which will block the current thread.
     ///
-    /// Defaults to a threadpool of size `8 * num_cpus`.
+    /// `Listener` may be used to control the `Server` and stop it from listening.
+    ///
+    /// When the `Listener` is dropped, the `Server` will automatically be stopped.
     ///
     /// ## Panics
     ///
     /// Panics if the provided address does not parse. To avoid this
     /// call `to_socket_addrs` yourself and pass a parsed `SocketAddr`.
     pub fn http<A: ToSocketAddrs>(self, addr: A) -> HttpResult<Listening> {
-        self.listen_with(addr, 8 * ::num_cpus::get(), Protocol::Http, None)
+        self.listen_with(addr, Protocol::Http, None)
     }
 
-    /// Kick off the server process using the HTTPS protocol.
+    /// Create a server using the HTTPS protocol.
     ///
     /// Call this once to begin listening for requests on the server.
-    /// This consumes the Iron instance, but does the listening on
-    /// another task, so is not blocking.
+    /// This consumes the Iron instance returns a `Server`, `Listener` pair.
     ///
-    /// The thread returns a guard that will automatically join with the parent
-    /// once it is dropped, blocking until this happens.
+    /// `Server` may then be run() which will block the current thread.
     ///
-    /// Defaults to a threadpool of size `8 * num_cpus`.
+    /// `Listener` may be used to control the `Server` and stop it from listening.
+    ///
+    /// When the `Listener` is dropped, the `Server` will automatically be stopped.
     ///
     /// ## Panics
     ///
@@ -130,11 +130,10 @@ impl<H: Handler> Iron<H> {
     #[cfg(feature = "ssl")]
     pub fn https<A: ToSocketAddrs>(self, addr: A, certificate: PathBuf, key: PathBuf)
                                    -> HttpResult<Listening> {
-        self.listen_with(addr, 8 * ::num_cpus::get(),
-                         Protocol::Https { certificate: certificate, key: key }, None)
+        self.listen_with(addr, Protocol::Https { certificate: certificate, key: key }, None)
     }
 
-    /// Kick off the server process with X threads.
+    /// Create a server
     ///
     /// ## Panics
     ///
